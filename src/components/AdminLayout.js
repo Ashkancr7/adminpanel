@@ -23,13 +23,23 @@ const AdminLayout = () => {
 
   return (
     <div dir="rtl" className="min-h-screen flex bg-gray-100 font-vazir relative">
-      {/* موبایل: دکمه باز کردن منو */}
-      <button
-        onClick={() => setMenuOpen(true)}
-        className="fixed top-4 right-4 z-50 bg-indigo-600 text-white p-2 rounded lg:hidden"
-      >
-        <Bars3Icon className="w-6 h-6" />
-      </button>
+      {/* پس‌زمینه تار در موبایل وقتی منو بازه */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-30 lg:hidden"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* دکمه باز کردن منو در موبایل */}
+      {!menuOpen && (
+        <button
+          onClick={() => setMenuOpen(true)}
+          className="absolute top-4 right-4 z-50 bg-indigo-600 text-white p-2 rounded lg:hidden"
+        >
+          <Bars3Icon className="w-3 h-3" />
+        </button>
+      )}
 
       {/* سایدبار */}
       <aside
@@ -37,7 +47,7 @@ const AdminLayout = () => {
           menuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* موبایل: دکمه بستن منو */}
+        {/* دکمه بستن در موبایل */}
         <div className="flex justify-between items-center mb-6 lg:hidden">
           <h2 className="text-lg font-bold text-indigo-600">پنل مدیریت</h2>
           <button onClick={() => setMenuOpen(false)}>
@@ -52,7 +62,7 @@ const AdminLayout = () => {
             <NavLink
               key={to}
               to={to}
-              onClick={() => setMenuOpen(false)} // بستن منو بعد از کلیک (در موبایل)
+              onClick={() => setMenuOpen(false)} // بستن منو بعد از کلیک در موبایل
               className={({ isActive }) =>
                 `flex items-center gap-2 p-2 rounded-md ${
                   isActive
@@ -69,7 +79,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* محتوای اصلی */}
-      <main className="flex-1 p-4 lg:ml-64">
+      <main className="flex-1 p-4 lg:mr-64">
         <Outlet />
       </main>
     </div>
