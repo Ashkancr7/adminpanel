@@ -1,4 +1,4 @@
-// src/components/AdminLayout.js
+// src/components/AdminLayout.jsx
 import { Outlet, NavLink } from 'react-router-dom';
 import {
   HomeIcon,
@@ -22,25 +22,39 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div dir="rtl" className="flex min-h-screen bg-gray-100 font-vazir">
-      {/* Sidebar */}
-      <aside className={`fixed top-0 right-0 z-40 w-64 bg-white shadow-md p-6 h-full transition-transform transform lg:translate-x-0 ${menuOpen ? 'translate-x-0' : 'translate-x-full'} lg:static lg:block`}>
-        <div className="flex items-center justify-between mb-8 lg:hidden">
-          <h1 className="text-xl font-bold text-indigo-600">پنل مدیریت</h1>
+    <div dir="rtl" className="min-h-screen flex bg-gray-100 font-vazir relative">
+      {/* موبایل: دکمه باز کردن منو */}
+      <button
+        onClick={() => setMenuOpen(true)}
+        className="fixed top-4 right-4 z-50 bg-indigo-600 text-white p-2 rounded lg:hidden"
+      >
+        <Bars3Icon className="w-6 h-6" />
+      </button>
+
+      {/* سایدبار */}
+      <aside
+        className={`fixed top-0 right-0 z-40 w-64 h-full bg-white shadow-md p-6 transition-transform duration-300 lg:static lg:translate-x-0 ${
+          menuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {/* موبایل: دکمه بستن منو */}
+        <div className="flex justify-between items-center mb-6 lg:hidden">
+          <h2 className="text-lg font-bold text-indigo-600">پنل مدیریت</h2>
           <button onClick={() => setMenuOpen(false)}>
             <XMarkIcon className="w-6 h-6 text-gray-600" />
           </button>
         </div>
 
         <h1 className="hidden lg:block text-2xl font-bold text-indigo-600 mb-6">پنل مدیریت</h1>
-        <nav className="flex flex-col gap-4">
+
+        <nav className="flex flex-col gap-3">
           {navItems.map(({ to, label, icon }) => (
             <NavLink
               key={to}
               to={to}
-              onClick={() => setMenuOpen(false)}
+              onClick={() => setMenuOpen(false)} // بستن منو بعد از کلیک (در موبایل)
               className={({ isActive }) =>
-                `flex items-center gap-2 p-2 rounded-md transition ${
+                `flex items-center gap-2 p-2 rounded-md ${
                   isActive
                     ? 'bg-indigo-100 text-indigo-700 font-semibold'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -54,16 +68,8 @@ const AdminLayout = () => {
         </nav>
       </aside>
 
-      {/* Mobile Menu Toggle */}
-      <button
-        onClick={() => setMenuOpen(true)}
-        className="fixed top-4 right-4 z-50 p-2 rounded-md bg-indigo-600 text-white shadow-lg lg:hidden"
-      >
-        <Bars3Icon className="w-6 h-6" />
-      </button>
-
-      {/* Main Content */}
-      <main className="flex-1 p-6 lg:ml-64">
+      {/* محتوای اصلی */}
+      <main className="flex-1 p-4 lg:ml-64">
         <Outlet />
       </main>
     </div>
