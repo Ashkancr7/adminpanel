@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from '../components/Modal';
 
-const AdminOrdersPage = () => {
+const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -10,6 +11,7 @@ const AdminOrdersPage = () => {
     const [showModal, setShowModal] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -23,32 +25,42 @@ const AdminOrdersPage = () => {
                 setLoading(false);
             }
         };
-
         fetchOrders();
     }, []);
 
     useEffect(() => {
         let updated = [...orders];
-
         if (statusFilter !== 'all') {
-            updated = updated.filter((order) => order.paymentStatus === statusFilter);
+            updated = updated.filter(order => order.paymentStatus === statusFilter);
         }
-
         if (searchQuery.trim()) {
-            updated = updated.filter((order) =>
+            updated = updated.filter(order =>
                 order.address?.receiverName?.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
-
         setFilteredOrders(updated);
     }, [orders, searchQuery, statusFilter]);
 
+    const renderStatusBadge = (status) => {
+        const colorMap = {
+            paid: 'bg-green-500',
+            unpaid: 'bg-yellow-500',
+            failed: 'bg-red-500',
+        };
+        const labelMap = {
+            paid: 'پرداخت شده',
+            unpaid: 'پرداخت نشده',
+            failed: 'ناموفق',
+        };
+        return <span className={`px-2 py-1 rounded text-white ${colorMap[status]}`}>{labelMap[status]}</span>;
+    };
+
     const handleDeleteOrder = async (orderId) => {
         if (!window.confirm('آیا مطمئنی می‌خوای این سفارش رو حذف کنی؟')) return;
-
         try {
             await axios.delete(`https://mystore-pbfe.onrender.com/api/payment/order/${orderId}`);
             setOrders(prev => prev.filter(order => order._id !== orderId));
+            alert('سفارش با موفقیت حذف شد.');
         } catch (err) {
             console.error('خطا در حذف سفارش:', err.message);
             alert('خطا در حذف سفارش!');
@@ -56,30 +68,40 @@ const AdminOrdersPage = () => {
     };
 
     const handleEditOrder = async () => {
+        const { _id, paymentStatus, address } = selectedOrder;
+        if (!paymentStatus || !address?.address || !address?.postCode) {
+            alert('لطفاً تمام فیلدها را پر کنید.');
+            return;
+        }
+
+        setSaving(true);
         try {
-            const { _id, paymentStatus, address } = selectedOrder;
             await axios.put(`https://mystore-pbfe.onrender.com/api/payment/order/${_id}`, {
                 paymentStatus,
                 address,
             });
 
             setOrders((prev) =>
-                prev.map((order) => (order._id === _id ? selectedOrder : order))
+                prev.map(order => order._id === _id ? selectedOrder : order)
             );
 
+            alert('سفارش با موفقیت ویرایش شد.');
             setEditMode(false);
             setShowModal(false);
+            setSelectedOrder(null);
         } catch (err) {
             console.error('خطا در ویرایش سفارش:', err.message);
             alert('خطا در ویرایش سفارش!');
+        } finally {
+            setSaving(false);
         }
     };
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">مدیریت سفارش‌ها</h2>
+        <div className="p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4">مدیریت سفارش‌ها</h2>
 
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
                 <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -96,37 +118,37 @@ const AdminOrdersPage = () => {
                     placeholder="جستجو بر اساس نام گیرنده"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border px-3 py-2 rounded w-64"
+                    className="border px-3 py-2 rounded w-full sm:w-64"
                 />
             </div>
 
             {loading ? (
                 <p>در حال بارگذاری سفارش‌ها...</p>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full border overflow-x-auto">
-                        <thead className="bg-gray-100">
+                <div className="overflow-x-auto rounded-lg border">
+                    <table className="min-w-full text-sm">
+                        <thead className="bg-gray-100 text-gray-700">
                             <tr>
-                                <th className="border px-4 py-2">#</th>
-                                <th className="border px-4 py-2">گیرنده</th>
-                                <th className="border px-4 py-2">همراه</th>
-                                <th className="border px-4 py-2">محصولات</th>
-                                <th className="border px-4 py-2">مبلغ نهایی</th>
-                                <th className="border px-4 py-2">وضعیت پرداخت</th>
-                                <th className="border px-4 py-2">تاریخ</th>
-                                <th className="border px-4 py-2">آدرس</th>
-                                <th className="border px-4 py-2">کدپستی</th>
-                                <th className="border px-4 py-2">عملیات</th>
+                                <th className="px-4 py-2 border">#</th>
+                                <th className="px-4 py-2 border">گیرنده</th>
+                                <th className="px-4 py-2 border">همراه</th>
+                                <th className="px-4 py-2 border">محصولات</th>
+                                <th className="px-4 py-2 border">مبلغ</th>
+                                <th className="px-4 py-2 border">وضعیت</th>
+                                <th className="px-4 py-2 border">تاریخ</th>
+                                <th className="px-4 py-2 border hidden lg:table-cell">آدرس</th>
+                                <th className="px-4 py-2 border hidden lg:table-cell">کدپستی</th>
+                                <th className="px-4 py-2 border">عملیات</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredOrders.map((order, index) => (
-                                <tr key={order._id}>
-                                    <td className="border px-4 py-2">{index + 1}</td>
-                                    <td className="border px-4 py-2">{order.address?.receiverName}</td>
-                                    <td className="border px-4 py-2">{order.address?.receiverPhone}</td>
-                                    <td className="border px-4 py-2">
-                                        <ul className="list-disc pl-4">
+                                <tr key={order._id} className="text-center">
+                                    <td className="border px-2 py-1">{index + 1}</td>
+                                    <td className="border px-2 py-1">{order.address?.receiverName}</td>
+                                    <td className="border px-2 py-1">{order.address?.receiverPhone}</td>
+                                    <td className="border px-2 py-1">
+                                        <ul className="list-disc pl-4 text-right">
                                             {order.items.map((item) => (
                                                 <li key={item._id} className="flex items-center gap-2">
                                                     <img
@@ -134,34 +156,17 @@ const AdminOrdersPage = () => {
                                                         alt={item.productId?.name}
                                                         className="w-10 h-10 object-cover rounded"
                                                     />
-                                                    {item.productId?.name || 'بدون نام'} (x{item.quantity})
+                                                    {item.productId?.name} (x{item.quantity})
                                                 </li>
                                             ))}
                                         </ul>
                                     </td>
-                                    <td className="border px-4 py-2">{order.finalAmount} تومان</td>
-                                    <td className="border px-4 py-2">
-                                        <span
-                                            className={`px-2 py-1 rounded text-white ${order.paymentStatus === 'paid'
-                                                ? 'bg-green-500'
-                                                : order.paymentStatus === 'unpaid'
-                                                    ? 'bg-yellow-500'
-                                                    : 'bg-red-500'
-                                                }`}
-                                        >
-                                            {order.paymentStatus === 'paid'
-                                                ? 'پرداخت شده'
-                                                : order.paymentStatus === 'unpaid'
-                                                    ? 'پرداخت نشده'
-                                                    : 'ناموفق'}
-                                        </span>
-                                    </td>
-                                    <td className="border px-4 py-2">
-                                        {new Date(order.createdAt).toLocaleDateString('fa-IR')}
-                                    </td>
-                                    <td className="border px-4 py-2">{order.address?.address}</td>
-                                    <td className="border px-4 py-2">{order.address?.postCode}</td>
-                                    <td className="border px-4 py-2 space-x-2 space-x-reverse">
+                                    <td className="border px-2 py-1">{order.finalAmount} تومان</td>
+                                    <td className="border px-2 py-1">{renderStatusBadge(order.paymentStatus)}</td>
+                                    <td className="border px-2 py-1">{new Date(order.createdAt).toLocaleString('fa-IR')}</td>
+                                    <td className="border px-2 py-1 hidden lg:table-cell">{order.address?.address}</td>
+                                    <td className="border px-2 py-1 hidden lg:table-cell">{order.address?.postCode}</td>
+                                    <td className="border px-2 py-1 space-x-2 space-x-reverse">
                                         <button
                                             onClick={() => {
                                                 setSelectedOrder(order);
@@ -189,128 +194,118 @@ const AdminOrdersPage = () => {
             )}
 
             {showModal && selectedOrder && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-[90%] max-w-2xl">
-                        <h3 className="text-xl font-bold mb-4">جزئیات سفارش</h3>
+                <Modal
+                    isOpen={showModal}
+                    onClose={() => {
+                        setShowModal(false);
+                        setEditMode(false);
+                        setSelectedOrder(null);
+                    }}
+                    title="جزئیات سفارش"
+                >
+                    <div className="space-y-2 text-right text-sm sm:text-base">
+                        {editMode ? (
+                            <>
+                                <label>وضعیت پرداخت:</label>
+                                <select
+                                    value={selectedOrder.paymentStatus}
+                                    onChange={(e) =>
+                                        setSelectedOrder({
+                                            ...selectedOrder,
+                                            paymentStatus: e.target.value,
+                                        })
+                                    }
+                                    className="border p-2 rounded w-full"
+                                >
+                                    <option value="paid">پرداخت شده</option>
+                                    <option value="unpaid">پرداخت نشده</option>
+                                    <option value="failed">ناموفق</option>
+                                </select>
 
-                        <div className="space-y-2">
-                            {editMode ? (
-                                <>
-                                    <label>وضعیت پرداخت:</label>
-                                    <select
-                                        value={selectedOrder.paymentStatus}
-                                        onChange={(e) =>
-                                            setSelectedOrder({
-                                                ...selectedOrder,
-                                                paymentStatus: e.target.value,
-                                            })
-                                        }
-                                        className="border p-2 rounded w-full"
-                                    >
-                                        <option value="paid">پرداخت شده</option>
-                                        <option value="unpaid">پرداخت نشده</option>
-                                        <option value="failed">ناموفق</option>
-                                    </select>
+                                <label>آدرس:</label>
+                                <input
+                                    type="text"
+                                    value={selectedOrder.address?.address || ''}
+                                    onChange={(e) =>
+                                        setSelectedOrder({
+                                            ...selectedOrder,
+                                            address: {
+                                                ...selectedOrder.address,
+                                                address: e.target.value,
+                                            },
+                                        })
+                                    }
+                                    className="border p-2 rounded w-full"
+                                />
 
-                                    <label>آدرس:</label>
-                                    <input
-                                        type="text"
-                                        value={selectedOrder.address?.address || ''}
-                                        onChange={(e) =>
-                                            setSelectedOrder({
-                                                ...selectedOrder,
-                                                address: {
-                                                    ...selectedOrder.address,
-                                                    address: e.target.value,
-                                                },
-                                            })
-                                        }
-                                        className="border p-2 rounded w-full mb-2"
-                                    />
+                                <label>کدپستی:</label>
+                                <input
+                                    type="text"
+                                    value={selectedOrder.address?.postCode || ''}
+                                    onChange={(e) =>
+                                        setSelectedOrder({
+                                            ...selectedOrder,
+                                            address: {
+                                                ...selectedOrder.address,
+                                                postCode: e.target.value,
+                                            },
+                                        })
+                                    }
+                                    className="border p-2 rounded w-full"
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <p>گیرنده: {selectedOrder.address?.receiverName}</p>
+                                <p>مبلغ: {selectedOrder.finalAmount} تومان</p>
+                                <p>وضعیت پرداخت: {renderStatusBadge(selectedOrder.paymentStatus)}</p>
+                                <p>آدرس: {selectedOrder.address?.address}</p>
+                                <p>کدپستی: {selectedOrder.address?.postCode}</p>
+                            </>
+                        )}
+                    </div>
 
-                                    <label>کدپستی:</label>
-                                    <input
-                                        type="text"
-                                        value={selectedOrder.address?.postCode || ''}
-                                        onChange={(e) =>
-                                            setSelectedOrder({
-                                                ...selectedOrder,
-                                                address: {
-                                                    ...selectedOrder.address,
-                                                    postCode: e.target.value,
-                                                },
-                                            })
-                                        }
-                                        className="border p-2 rounded w-full"
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <p>گیرنده: {selectedOrder.address?.receiverName}</p>
-                                    <p>مبلغ: {selectedOrder.finalAmount} تومان</p>
-                                    <p>
-                                        وضعیت پرداخت:{' '}
-                                        <span
-                                            className={`px-2 py-1 rounded text-white ${selectedOrder.paymentStatus === 'paid'
-                                                ? 'bg-green-500'
-                                                : selectedOrder.paymentStatus === 'unpaid'
-                                                    ? 'bg-yellow-500'
-                                                    : 'bg-red-500'
-                                                }`}
-                                        >
-                                            {selectedOrder.paymentStatus === 'paid'
-                                                ? 'پرداخت شده'
-                                                : selectedOrder.paymentStatus === 'unpaid'
-                                                    ? 'پرداخت نشده'
-                                                    : 'ناموفق'}
-                                        </span>
-                                    </p>
-                                    <p>آدرس: {selectedOrder.address?.address}</p>
-                                    <p>کدپستی: {selectedOrder.address?.postCode}</p>
-                                </>
-                            )}
-
-                        </div>
-
-                        <div className="mt-6 flex justify-end gap-3">
-                            {editMode ? (
-                                <>
-                                    <button
-                                        onClick={handleEditOrder}
-                                        className="bg-green-600 text-white px-4 py-2 rounded"
-                                    >
-                                        ذخیره
-                                    </button>
-                                    <button
-                                        onClick={() => setEditMode(false)}
-                                        className="bg-gray-500 text-white px-4 py-2 rounded"
-                                    >
-                                        لغو
-                                    </button>
-                                </>
-                            ) : (
+                    <div className="mt-6 flex justify-end gap-3">
+                        {editMode ? (
+                            <>
+                                <button
+                                    onClick={handleEditOrder}
+                                    disabled={saving}
+                                    className={`bg-green-600 text-white px-4 py-2 rounded ${saving ? 'opacity-50' : ''}`}
+                                >
+                                    ذخیره
+                                </button>
+                                <button
+                                    onClick={() => setEditMode(false)}
+                                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                                >
+                                    لغو
+                                </button>
+                            </>
+                        ) : (
+                            <>
                                 <button
                                     onClick={() => setEditMode(true)}
                                     className="bg-blue-600 text-white px-4 py-2 rounded"
                                 >
                                     ویرایش
                                 </button>
-                            )}
-                            <button
-                                onClick={() => {
-                                    setShowModal(false);
-                                    setEditMode(false);
-                                }}
-                                className="bg-red-500 text-white px-4 py-2 rounded"
-                            >
-                                بستن
-                            </button>
-                        </div>
+                                <button
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setSelectedOrder(null);
+                                    }}
+                                    className="bg-gray-400 text-white px-4 py-2 rounded"
+                                >
+                                    بستن
+                                </button>
+                            </>
+                        )}
                     </div>
-                </div>
+                </Modal>
             )}
         </div>
     );
 };
 
-export default AdminOrdersPage;
+export default Orders;
