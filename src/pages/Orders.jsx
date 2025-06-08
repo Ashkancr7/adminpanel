@@ -125,30 +125,30 @@ const Orders = () => {
             {loading ? (
                 <p>در حال بارگذاری سفارش‌ها...</p>
             ) : (
-                <div className="overflow-x-auto rounded-lg border">
-                    <table className="min-w-full text-sm">
+                <div className="overflow-x-auto rounded-lg border max-h-[calc(100vh-160px)] overflow-auto">
+                    <table className="min-w-max w-full text-sm table-auto border-collapse">
                         <thead className="bg-gray-100 text-gray-700">
                             <tr>
-                                <th className="px-4 py-2 border">#</th>
-                                <th className="px-4 py-2 border">گیرنده</th>
-                                <th className="px-4 py-2 border">همراه</th>
-                                <th className="px-4 py-2 border">محصولات</th>
-                                <th className="px-4 py-2 border">مبلغ</th>
-                                <th className="px-4 py-2 border">وضعیت</th>
-                                <th className="px-4 py-2 border">تاریخ</th>
-                                <th className="px-4 py-2 border hidden lg:table-cell">آدرس</th>
-                                <th className="px-4 py-2 border hidden lg:table-cell">کدپستی</th>
-                                <th className="px-4 py-2 border">عملیات</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">#</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">گیرنده</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">همراه</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">محصولات</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">مبلغ</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">وضعیت</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">تاریخ</th>
+                                <th className="px-4 py-2 border hidden lg:table-cell whitespace-nowrap">آدرس</th>
+                                <th className="px-4 py-2 border hidden lg:table-cell whitespace-nowrap">کدپستی</th>
+                                <th className="px-4 py-2 border whitespace-nowrap">عملیات</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredOrders.map((order, index) => (
                                 <tr key={order._id} className="text-center">
-                                    <td className="border px-2 py-1">{index + 1}</td>
-                                    <td className="border px-2 py-1">{order.address?.receiverName}</td>
-                                    <td className="border px-2 py-1">{order.address?.receiverPhone}</td>
-                                    <td className="border px-2 py-1">
-                                        <ul className="list-disc pl-4 text-right">
+                                    <td className="border px-2 py-1 whitespace-nowrap">{index + 1}</td>
+                                    <td className="border px-2 py-1 whitespace-nowrap">{order.address?.receiverName}</td>
+                                    <td className="border px-2 py-1 whitespace-nowrap">{order.address?.receiverPhone}</td>
+                                    <td className="border px-2 py-1 text-right max-w-xs">
+                                        <ul className="list-disc pl-4 max-h-24 overflow-auto text-right">
                                             {order.items.map((item) => (
                                                 <li key={item._id} className="flex items-center gap-2">
                                                     <img
@@ -161,12 +161,12 @@ const Orders = () => {
                                             ))}
                                         </ul>
                                     </td>
-                                    <td className="border px-2 py-1">{order.finalAmount} تومان</td>
-                                    <td className="border px-2 py-1">{renderStatusBadge(order.paymentStatus)}</td>
-                                    <td className="border px-2 py-1">{new Date(order.createdAt).toLocaleString('fa-IR')}</td>
-                                    <td className="border px-2 py-1 hidden lg:table-cell">{order.address?.address}</td>
-                                    <td className="border px-2 py-1 hidden lg:table-cell">{order.address?.postCode}</td>
-                                    <td className="border px-2 py-1 space-x-2 space-x-reverse">
+                                    <td className="border px-2 py-1 whitespace-nowrap">{order.finalAmount} تومان</td>
+                                    <td className="border px-2 py-1 whitespace-nowrap">{renderStatusBadge(order.paymentStatus)}</td>
+                                    <td className="border px-2 py-1 whitespace-nowrap">{new Date(order.createdAt).toLocaleString('fa-IR')}</td>
+                                    <td className="border px-2 py-1 hidden lg:table-cell whitespace-nowrap">{order.address?.address}</td>
+                                    <td className="border px-2 py-1 hidden lg:table-cell whitespace-nowrap">{order.address?.postCode}</td>
+                                    <td className="border px-2 py-1 space-x-2 space-x-reverse whitespace-nowrap">
                                         <button
                                             onClick={() => {
                                                 setSelectedOrder(order);
@@ -215,7 +215,7 @@ const Orders = () => {
                                             paymentStatus: e.target.value,
                                         })
                                     }
-                                    className="border p-2 rounded w-full"
+                                    className="border px-2 py-1 rounded w-full"
                                 >
                                     <option value="paid">پرداخت شده</option>
                                     <option value="unpaid">پرداخت نشده</option>
@@ -223,8 +223,7 @@ const Orders = () => {
                                 </select>
 
                                 <label>آدرس:</label>
-                                <input
-                                    type="text"
+                                <textarea
                                     value={selectedOrder.address?.address || ''}
                                     onChange={(e) =>
                                         setSelectedOrder({
@@ -235,7 +234,8 @@ const Orders = () => {
                                             },
                                         })
                                     }
-                                    className="border p-2 rounded w-full"
+                                    className="border px-2 py-1 rounded w-full"
+                                    rows={3}
                                 />
 
                                 <label>کدپستی:</label>
@@ -251,42 +251,45 @@ const Orders = () => {
                                             },
                                         })
                                     }
-                                    className="border p-2 rounded w-full"
+                                    className="border px-2 py-1 rounded w-full"
                                 />
                             </>
                         ) : (
                             <>
-                                <p>گیرنده: {selectedOrder.address?.receiverName}</p>
-                                <p>مبلغ: {selectedOrder.finalAmount} تومان</p>
-                                <p>وضعیت پرداخت: {renderStatusBadge(selectedOrder.paymentStatus)}</p>
-                                <p>آدرس: {selectedOrder.address?.address}</p>
-                                <p>کدپستی: {selectedOrder.address?.postCode}</p>
+                                <p><strong>گیرنده:</strong> {selectedOrder.address?.receiverName}</p>
+                                <p><strong>همراه:</strong> {selectedOrder.address?.receiverPhone}</p>
+                                <p><strong>آدرس:</strong> {selectedOrder.address?.address}</p>
+                                <p><strong>کدپستی:</strong> {selectedOrder.address?.postCode}</p>
+                                <p><strong>وضعیت پرداخت:</strong> {selectedOrder.paymentStatus}</p>
                             </>
                         )}
                     </div>
 
-                    <div className="mt-6 flex justify-end gap-3">
+                    <div className="mt-4 flex justify-end gap-2">
                         {editMode ? (
                             <>
                                 <button
-                                    onClick={handleEditOrder}
+                                    onClick={() => {
+                                        setEditMode(false);
+                                    }}
+                                    className="px-4 py-2 rounded border"
                                     disabled={saving}
-                                    className={`bg-green-600 text-white px-4 py-2 rounded ${saving ? 'opacity-50' : ''}`}
                                 >
-                                    ذخیره
+                                    انصراف
                                 </button>
                                 <button
-                                    onClick={() => setEditMode(false)}
-                                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                                    onClick={handleEditOrder}
+                                    className="px-4 py-2 rounded bg-blue-600 text-white"
+                                    disabled={saving}
                                 >
-                                    لغو
+                                    {saving ? 'در حال ذخیره...' : 'ذخیره'}
                                 </button>
                             </>
                         ) : (
                             <>
                                 <button
                                     onClick={() => setEditMode(true)}
-                                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                                    className="px-4 py-2 rounded bg-green-600 text-white"
                                 >
                                     ویرایش
                                 </button>
@@ -295,7 +298,7 @@ const Orders = () => {
                                         setShowModal(false);
                                         setSelectedOrder(null);
                                     }}
-                                    className="bg-gray-400 text-white px-4 py-2 rounded"
+                                    className="px-4 py-2 rounded border"
                                 >
                                     بستن
                                 </button>

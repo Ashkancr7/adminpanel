@@ -79,7 +79,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* محتوای اصلی */}
-      <main className="flex-1 p-4 lg:mr-64">
+      <main className="flex-1 p-4 lg:ml-64 overflow-auto min-h-screen">
         <Outlet />
       </main>
     </div>
