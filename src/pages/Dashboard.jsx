@@ -5,9 +5,14 @@ import Sidebar from '../components/Sidebar';
 const Dashboard = () => {
   return (
     <div className="p-6 text-right">
-        
-      <h1 className="text-3xl font-bold mb-4">داشبورد</h1>
-      <p className='font-vazir'>خوش آمدید! از منوی کناری صفحات را مدیریت کنید.</p>
+
+      <iframe
+        src="https://my-front-hecm.vercel.app/"
+        width="100%"
+        height="500px"
+        style={{ border: 'none' }}
+        title="Embedded Web Page"
+      />
     </div>
   );
 };

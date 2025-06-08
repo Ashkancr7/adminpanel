@@ -25,7 +25,7 @@ const AdminPayments = () => {
         <div className="p-6">
             <h2 className="text-xl font-bold mb-4">لیست پرداخت‌ها</h2>
             {loading ? (
-                <p>در حال بارگذاری....</p>
+                <p>در حال بارگذاری...</p>
             ) : (
                 <div className="overflow-auto">
                     <table className="w-full border text-sm text-center">
