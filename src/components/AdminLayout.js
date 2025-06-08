@@ -1,7 +1,6 @@
 // src/components/AdminLayout.js
-import { useLocation } from 'react-router-dom';
-import { Outlet, NavLink } from 'react-router-dom';
 import { useState } from 'react';
+import { Outlet, NavLink } from 'react-router-dom';
 import {
   HomeIcon,
   PlusCircleIcon,
@@ -12,16 +11,6 @@ import {
 
 const AdminLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
-
-  // اگر در مسیر داشبورد بود، فقط محتوای اصلی رو نشون بده
-  if (location.pathname === '/dashboard') {
-    return (
-      <div className="w-screen h-screen">
-        <Outlet />
-      </div>
-    );
-  }
 
   const links = [
     { to: '/dashboard', label: 'داشبورد', icon: HomeIcon },
@@ -33,23 +22,20 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div dir="rtl" className="flex flex-col md:flex-row min-h-screen bg-gray-100 font-vazir relative">
-      {/* موبایل منو */}
-      <div className="md:hidden bg-white shadow p-4 flex justify-between items-center z-20">
-        <h1 className="text-lg font-bold text-indigo-600">پنل مدیریت</h1>
-        <button onClick={() => setIsOpen(!isOpen)} className="p-1 rounded text-indigo-600">
+    <div dir="rtl" className="flex flex-col md:flex-row min-h-screen bg-gray-100 font-vazir">
+      {/* دکمه منو برای موبایل */}
+      <div className="md:hidden bg-white shadow p-4 flex items-center">
+          <button onClick={() => setIsOpen(!isOpen)} className="p-1 rounded text-indigo-600">
           {isOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
         </button>
+        <h1 className="text-lg font-bold text-indigo-600">پنل مدیریت</h1>
       </div>
 
-      {/* سایدبار با انیمیشن */}
+      {/* سایدبار */}
       <aside
-        className={`
-          fixed top-0 right-0 h-full w-64 bg-white shadow-md p-6 space-y-8 z-30
-          transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : 'translate-x-full'}
-          md:relative md:translate-x-0 md:block hidden
-        `}
+        className={`${
+          isOpen ? 'block' : 'hidden'
+        } md:block bg-white w-full md:w-64 shadow-md p-6 space-y-8 z-20 md:relative absolute right-0 top-0 h-full md:h-auto`}
       >
         <h1 className="text-2xl font-bold text-indigo-600 hidden md:block">پنل مدیریت</h1>
         <nav className="flex flex-col gap-4">
@@ -57,7 +43,7 @@ const AdminLayout = () => {
             <NavLink
               key={to}
               to={to}
-              onClick={() => setIsOpen(false)}
+              onClick={() => setIsOpen(false)} // بسته شدن منو در موبایل
               className={({ isActive }) =>
                 `flex items-center gap-2 p-2 rounded-md ${
                   isActive
@@ -73,15 +59,8 @@ const AdminLayout = () => {
         </nav>
       </aside>
 
-      {/* اوت‌لت + محتوای اصلی */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-10 md:hidden"
-          onClick={() => setIsOpen(false)}
-        ></div>
-      )}
-
-      <main className="flex-1 p-6 md:mr-64">
+      {/* محتوای اصلی */}
+      <main className="flex-1 p-6">
         <Outlet />
       </main>
     </div>

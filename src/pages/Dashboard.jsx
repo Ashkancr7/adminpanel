@@ -6,7 +6,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full h-screen relative">
+    <div className="relative w-full h-screen overflow-hidden">
       <iframe
         src="https://my-front-hecm.vercel.app/"
         className="w-full h-full"
@@ -14,10 +14,10 @@ const Dashboard = () => {
         title="Embedded Web Page"
       />
 
-      {/* دکمه برگشت به پنل مدیریت */}
+      {/* دکمه بازگشت با z-index بالا */}
       <button
         onClick={() => navigate('/products')}
-        className="absolute bottom-4 left-4 bg-indigo-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-indigo-700 transition"
+        className="fixed bottom-4 left-4 z-50 bg-indigo-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-indigo-700 transition"
       >
         بازگشت به پنل
       </button>
