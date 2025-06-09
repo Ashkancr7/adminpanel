@@ -16,7 +16,12 @@ const Orders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const res = await axios.get('https://mystore-pbfe.onrender.com/api/payment/all-orders');
+                const token = localStorage.getItem('admin_token'); // گرفتن توکن از لوکال‌استوریج
+                const res = await axios.get('https://mystore-pbfe.onrender.com/api/payment/all-orders', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 setOrders(res.data);
                 setFilteredOrders(res.data);
             } catch (err) {
