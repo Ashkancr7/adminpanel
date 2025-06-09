@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AdminLayout from '../components/AdminLayout';
 
 const AdminPanel = () => {
   const navigate = useNavigate();
@@ -11,7 +12,10 @@ const AdminPanel = () => {
     }
   }, []);
 
-  return <div>به پنل ادمین خوش اومدی!</div>;
+  return <>
+  <AdminLayout />
+
+  </>;
 };
 
 export default AdminPanel;

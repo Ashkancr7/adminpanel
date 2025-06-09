@@ -18,7 +18,7 @@ const AdminLogin = () => {
 
       localStorage.setItem('admin_token', res.data.token);
       setError('');
-      navigate('/admin-panel');
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'خطا در ورود');
     } finally {
