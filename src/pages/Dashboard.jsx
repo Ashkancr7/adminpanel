@@ -1,5 +1,7 @@
 // pages/Dashboard.jsx
 import React from 'react';
+import { LogOut } from 'lucide-react';
+import { href } from 'react-router-dom';
 
 const Dashboard = () => {
   const stats = [
@@ -8,10 +10,27 @@ const Dashboard = () => {
     { label: 'پرداخت‌های موفق', value: 85, color: 'bg-indigo-500' },
     { label: 'محصولات موجود', value: 67, color: 'bg-yellow-500' },
   ];
-
+  const removetoken = () => {
+    localStorage.removeItem('admin_token');
+    window.location.reload();
+  }
   return (
     <div className="p-6 text-right font-vazir">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">داشبورد مدیریت</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center sm:text-right">
+          داشبورد مدیریت
+        </h1>
+
+        <button
+          onClick={() => removetoken()}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 rounded-lg transition duration-200 shadow-sm"
+        >
+          <span className="font-medium text-sm sm:text-base">خروج</span>
+          <LogOut size={18} className="rotate-180" />
+        </button>
+      </div>
+
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((item, index) => (
@@ -34,6 +53,7 @@ const Dashboard = () => {
           <li>🛠️ محصول جدید اضافه شد</li>
         </ul>
       </div>
+
     </div>
   );
 };

@@ -73,8 +73,10 @@ const AdminLayout = () => {
             >
               {icon}
               {label}
+              
             </NavLink>
           ))}
+         
         </nav>
       </aside>
 
