@@ -7,6 +7,8 @@ const ProductList = () => {
   const [category, setCategory] = useState('زنانه');
   const [categories] = useState(['زنانه', 'مردانه', 'بچگانه', 'تخفیف خورده']);
   const [editProduct, setEditProduct] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [editFormData, setEditFormData] = useState({
     name: '',
     description: '',
@@ -21,9 +23,15 @@ const ProductList = () => {
 
   useEffect(() => {
     if (!category) return;
+    setLoading(true);
+    setError(null);
     axios.get(`https://mystore-pbfe.onrender.com/api/products/category/${category}`)
       .then(res => setProducts(res.data))
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setError('خطا در بارگذاری محصولات');
+      })
+      .finally(() => setLoading(false));
   }, [category]);
 
   const handleDelete = async (id) => {
@@ -101,6 +109,7 @@ const ProductList = () => {
   const currentProducts = filteredProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
 
   return (
+
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">لیست محصولات</h1>
 
@@ -242,7 +251,8 @@ const ProductList = () => {
         </form>
       )}
 
-
+      {loading && <p className="text-center text-blue-500 my-4">در حال بارگذاری...</p>}
+      {error && <p className="text-center text-red-500 my-4">{error}</p>}
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full text-sm text-right">
           <thead className="bg-gray-100 text-gray-600">

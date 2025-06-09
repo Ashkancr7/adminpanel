@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 
 const AdminPayments = () => {
     const [payments, setPayments] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchPayments = async () => {
@@ -31,7 +32,7 @@ const AdminPayments = () => {
                     <table className="w-full border text-sm text-center">
                         <thead className="bg-gray-100">
                             <tr>
-                               
+
 
                                 <th className="p-2 border">کاربر</th>
                                 <th className="p-2 border">مبلغ</th>
@@ -45,7 +46,7 @@ const AdminPayments = () => {
                             {payments.map((p) => (
                                 <tr key={p._id} className="border-t">
                                     <td>{p.receiverName}</td>
-                                 
+
                                     <td className="p-2 border">{p.amount.toLocaleString()} تومان</td>
                                     <td className="p-2 border">
                                         {p.isPaid ? 'موفق' : 'ناموفق'}

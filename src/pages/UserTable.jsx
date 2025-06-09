@@ -5,6 +5,8 @@ const UserTable = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [editUserId, setEditUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [editFormData, setEditFormData] = useState({
     nam: '',
     lname: '',
@@ -22,11 +24,19 @@ const UserTable = () => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = () => {
-    axios.get('https://mystore-pbfe.onrender.com/api/auth/users')
-      .then(res => setUsers(res.data))
-      .catch(err => console.error('خطا در دریافت کاربران:', err));
-  };
+  const fetchUsers = async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await axios.get('https://mystore-pbfe.onrender.com/api/auth/users');
+    setUsers(res.data);
+  } catch (err) {
+    console.error('خطا در دریافت کاربران:', err);
+    setError('خطا در دریافت کاربران');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleEditClick = (user) => {
     setEditUserId(user._id);
@@ -143,6 +153,8 @@ const UserTable = () => {
 
       {/* جدول کاربران */}
       <div className="overflow-x-auto">
+        {loading && <p className="text-center text-blue-500 my-4">در حال بارگذاری...</p>}
+        {error && <p className="text-center text-red-500 my-4">{error}</p>}
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 text-gray-700">
