@@ -16,12 +16,14 @@ const Orders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const token = localStorage.getItem('admin_token'); // گرفتن توکن از لوکال‌استوریج
+                const token = localStorage.getItem('admin_token');
                 const res = await axios.get('https://mystore-pbfe.onrender.com/api/payment/all-orders', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
+                console.log('data', res);
+
                 setOrders(res.data);
                 setFilteredOrders(res.data);
             } catch (err) {
@@ -161,7 +163,12 @@ const Orders = () => {
                                                         alt={item.productId?.name}
                                                         className="w-10 h-10 object-cover rounded"
                                                     />
-                                                    {item.productId?.name} (x{item.quantity})
+                                                    <div className="flex flex-col text-sm">
+                                                        <span>{item.productId?.name} (x{item.quantity})</span>
+                                                        <span>رنگ: {item.selectedColor || '—'}</span>
+                                                        <span>سایز: {item.selectedSize || '—'}</span>
+                                                    </div>
+
                                                 </li>
                                             ))}
                                         </ul>
